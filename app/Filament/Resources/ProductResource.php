@@ -66,7 +66,12 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('Id'),
-                Tables\Columns\ImageColumn::make('image')->label('Imagen'),
+                Tables\Columns\ImageColumn::make('image')
+    ->label('Imagen')
+    ->getStateUsing(function ($record) {
+        return $record->image ? 'storage/app/public/' . $record->image : null;
+    })
+    ->circular(),
                 Tables\Columns\TextColumn::make('name')->label('Name'),
                 Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn($record) => $record->description),
                 Tables\Columns\TextColumn::make('price')->label('Precio')->money('cop'),
