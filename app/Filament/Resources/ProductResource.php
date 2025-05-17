@@ -66,12 +66,21 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('Id'),
-               Tables\Columns\ImageColumn::make('image')
-    ->label('Imagen')
-    ->getStateUsing(function ($record) {
-        return $record->image ? config('app.url') . '/storage/app/public/' . $record->image : null;
-    })
-    ->circular(),
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Imagen')
+                    ->getStateUsing(function ($record) {
+                        // Determina si estamos en la nube o en local
+                        $useCloudStorage = false;
+
+                        if ($useCloudStorage) {
+                            // En la nube: Usa la URL con storage/app/public/
+                            return $record->image ? config('app.url') . '/storage/app/public/' . $record->image : null;
+                        } else {
+                            // En local: Usa el enlace simbólico (public/storage/)
+                            return $record->image ? config('app.url') . '/storage/' . $record->image : null;
+                        }
+                    })
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')->label('Name'),
                 Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn($record) => $record->description),
                 Tables\Columns\TextColumn::make('price')->label('Precio')->money('cop'),
