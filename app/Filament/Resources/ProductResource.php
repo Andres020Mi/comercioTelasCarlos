@@ -66,10 +66,10 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('Id'),
-                Tables\Columns\ImageColumn::make('image')
+               Tables\Columns\ImageColumn::make('image')
     ->label('Imagen')
     ->getStateUsing(function ($record) {
-        return $record->image ? 'storage/app/public/' . $record->image : null;
+        return $record->image ? config('app.url') . '/storage/app/public/' . $record->image : null;
     })
     ->circular(),
                 Tables\Columns\TextColumn::make('name')->label('Name'),
