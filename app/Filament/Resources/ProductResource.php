@@ -51,7 +51,13 @@ class ProductResource extends Resource
                             ->label('Description')
                             ->required()
                             ->maxLength(255),
-                    ])
+                    ]),
+                Forms\Components\FileUpload::make('image')
+                    ->label('Imagen')
+                    ->image() // activa vista previa
+                    ->imageEditor() // opcional, activa edición recorte
+                    ->directory('products') // carpeta en storage/app/public/products
+                    ->required(),
             ]);
     }
 
@@ -59,9 +65,10 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                  Tables\Columns\TextColumn::make('id')->label('Id'),
+                Tables\Columns\TextColumn::make('id')->label('Id'),
+                Tables\Columns\ImageColumn::make('image')->label('Imagen'),
                 Tables\Columns\TextColumn::make('name')->label('Name'),
-                Tables\Columns\TextColumn::make('description') ->limit(50)->tooltip(fn ($record) => $record->description),
+                Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn($record) => $record->description),
                 Tables\Columns\TextColumn::make('price')->label('Precio')->money('cop'),
                 Tables\Columns\TextColumn::make('category.name')->label('Category'),
             ])

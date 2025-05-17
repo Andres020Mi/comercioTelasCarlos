@@ -35,7 +35,7 @@ class CategoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make("id"),
                 Tables\Columns\TextColumn::make("name"),
-                Tables\Columns\TextColumn::make("description"),
+                              Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn($record) => $record->description),
             ])
             ->filters([
                 //
