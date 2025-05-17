@@ -58,8 +58,8 @@ class ProductResource extends Resource
     ->imageEditor() // Activa edición recorte
     ->directory(function () {
         // Determina si estamos en la nube o en local
-        $useCloudStorage = false; // Cambia a true en la nube
-        return $useCloudStorage ? 'products' : 'storage/products';
+        // Cambia a true en la nube
+        return 'products' ;
     })
     ->disk('public') // Usa el disco público por defecto
     ->required(function ($livewire) {
