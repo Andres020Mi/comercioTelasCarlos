@@ -53,17 +53,25 @@ class ProductResource extends Resource
                             ->maxLength(255),
                     ]),
               Forms\Components\FileUpload::make('image')
-                ->label('Imagen')
-                ->image() // activa vista previa
-                ->imageEditor() // opcional, activa edición recorte
-                ->directory(function () {
-                    // Determina si estamos en la nube o en local
-                    $useCloudStorage = false; // Cambia a true en la nube
-
-                    return $useCloudStorage ? 'products' : 'storage/products';
-                })
-                ->disk('public') // Usa el disco público por defecto
-                ->required(),
+    ->label('Imagen')
+    ->image() // Activa vista previa
+    ->imageEditor() // Activa edición recorte
+    ->directory(function () {
+        // Determina si estamos en la nube o en local
+        $useCloudStorage = false; // Cambia a true en la nube
+        return $useCloudStorage ? 'products' : 'storage/products';
+    })
+    ->disk('public') // Usa el disco público por defecto
+    ->required(function ($livewire) {
+        // Solo requerido en creación
+        return $livewire instanceof \Filament\Resources\Pages\CreateRecord;
+    })
+    ->afterStateHydrated(function ($component, $state, $record) {
+        // En edición, forzar el campo a estar vacío
+        if ($record && $record->exists) {
+            $component->state(null);
+        }
+    }),
             ]);
     }
 
@@ -75,8 +83,8 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Imagen')
                     ->getStateUsing(function ($record) {
-                        // Determina si estamos en la nube o en local
-                        $useCloudStorage = false;
+                        // Determina si estamos en la nube o en local usando .env
+                        $useCloudStorage = env('USE_CLOUD_STORAGE', false);
 
                         if ($useCloudStorage) {
                             // En la nube: Usa la URL con storage/app/public/
@@ -87,6 +95,7 @@ class ProductResource extends Resource
                         }
                     })
                     ->circular(),
+
                 Tables\Columns\TextColumn::make('name')->label('Name'),
                 Tables\Columns\TextColumn::make('description')->limit(50)->tooltip(fn($record) => $record->description),
                 Tables\Columns\TextColumn::make('price')->label('Precio')->money('cop'),
