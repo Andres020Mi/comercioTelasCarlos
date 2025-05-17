@@ -52,12 +52,18 @@ class ProductResource extends Resource
                             ->required()
                             ->maxLength(255),
                     ]),
-                Forms\Components\FileUpload::make('image')
-                    ->label('Imagen')
-                    ->image() // activa vista previa
-                    ->imageEditor() // opcional, activa edición recorte
-                    ->directory('products') // carpeta en storage/app/public/products
-                    ->required(),
+              Forms\Components\FileUpload::make('image')
+                ->label('Imagen')
+                ->image() // activa vista previa
+                ->imageEditor() // opcional, activa edición recorte
+                ->directory(function () {
+                    // Determina si estamos en la nube o en local
+                    $useCloudStorage = false; // Cambia a true en la nube
+
+                    return $useCloudStorage ? 'products' : 'storage/products';
+                })
+                ->disk('public') // Usa el disco público por defecto
+                ->required(),
             ]);
     }
 
